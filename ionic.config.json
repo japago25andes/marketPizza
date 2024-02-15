@@ -1,0 +1,7 @@
+{
+  "name": "marketPizza",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
