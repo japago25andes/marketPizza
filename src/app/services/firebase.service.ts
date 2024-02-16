@@ -16,6 +16,10 @@ export class FirebaseService {
 
   //=============== Autenticación ===============
   
+  getAuth(){
+    return getAuth();
+  }
+
   //=============== Acceder ===============
   signIn(user: User){
     return signInWithEmailAndPassword(getAuth(), user.email, user.password);
@@ -34,7 +38,7 @@ export class FirebaseService {
 
   //=============== Enviar email para restablecer contraseña ===============
   sendRecoveryEmail(email: string){
-    return sendPasswordResetEmail(getAuth(), 'email');
+    return sendPasswordResetEmail(getAuth(), email);
   }
 
 
