@@ -12,7 +12,7 @@ import { UtilsService } from 'src/app/services/utils.service';
 export class AddUpdateProductComponent  implements OnInit {
 
   form = new FormGroup({
-    uid: new FormControl(''),
+    id: new FormControl(''),
     image: new FormControl('', [Validators.required]),
     name: new FormControl('', [Validators.required, Validators.minLength(4)]),
     price: new FormControl('', [Validators.required, Validators.min(0)]),
@@ -22,7 +22,12 @@ export class AddUpdateProductComponent  implements OnInit {
   firebaseSvc = inject(FirebaseService);
   utilsSvc = inject(UtilsService);
 
+  user = {} as User;
+
   ngOnInit() {
+
+    this.user = this.utilsSvc.getFromLocalStorage('user');
+
   }
 
   //=============== Tomar/Seleccionar Imagen ===============
@@ -34,15 +39,30 @@ export class AddUpdateProductComponent  implements OnInit {
   async submit() {
     if(this.form.valid){
 
-      const loading = await this.utilsSvc.loading();
+      let path = `users/${this.user.uid}/products`;
 
+      const loading = await this.utilsSvc.loading();
       await loading.present();
 
-      this.firebaseSvc.signUp(this.form.value as User).then(async res =>{
+      // ===== Subir la imagen y obtener la url =====
+      let dataUrl = this.form.value.image;
+      let imagePath = `${this.user.uid}/${Date.now()}`;
+      let imageUrl = await this.firebaseSvc.uploadImage(imagePath, dataUrl);
+      this.form.controls.image.setValue(imageUrl);
 
-        await this.firebaseSvc.updateUser(this.form.value.name);
+      delete this.form.value.id;
 
-        let uid = res.user.uid;
+      this.firebaseSvc.addDocument(path, this.form.value).then(async res =>{
+
+        this.utilsSvc.dismissModal({ success: true});
+        
+        this.utilsSvc.presentToast({
+          message: 'Pizza creada exitosamente',
+          duration: 1500,
+          color: 'success',
+          position: 'middle',
+          icon: 'checkmark-circle-outline'
+        });
 
       }).catch(error => {
         console.log(error);
