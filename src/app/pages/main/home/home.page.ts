@@ -42,11 +42,16 @@ export class HomePage implements OnInit {
   }
 
   //=============== Agregar o actualizar pizza ===============
-  addUpdateProduct(){
-    this.utilsSvc.presentModal({
+  async addUpdateProduct(product?: Product){
+    
+    let success = await this.utilsSvc.presentModal({
       component: AddUpdateProductComponent,
       cssClass: 'add-update-modal',
+      componentProps: {product}
     })
+
+    if(success) this.getProducts();
+
   }
 
 }
