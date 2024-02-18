@@ -54,4 +54,66 @@ export class HomePage implements OnInit {
 
   }
 
+  
+
+  // ================ Confirmar la eliminacion del producto ===============
+  async confirmDeleteProduct(product: Product) {
+    this.utilsSvc.presentAlert({
+      header: 'Eliminar Pizza',
+      message: '¿Quieres eliminar esta pizza?',
+      mode: 'ios',
+      buttons: [
+        {
+          text: 'Cancelar',
+        }, {
+          text: 'Si, eliminar',
+          handler: () => {
+            this.deleteProduct(product);
+          }
+        }
+      ]
+    });
+  }
+
+
+  // ================ Eliminar Producto ===============
+  async deleteProduct(product: Product) {
+
+    let path = `users/${this.user().uid}/products/${product.id}`;
+
+    const loading = await this.utilsSvc.loading();
+    await loading.present();
+
+    let imagePath = await this.firebaseSvc.getFilePath(product.image);
+    await this.firebaseSvc.deleteFile(imagePath);
+
+    this.firebaseSvc.deleteDocument(path).then(async res =>{
+
+      this.products = this.products.filter(p => p.id !== product.id);
+      
+      this.utilsSvc.presentToast({
+        message: 'Pizza eliminada exitosamente',
+        duration: 1500,
+        color: 'success',
+        position: 'middle',
+        icon: 'checkmark-circle-outline'
+      });
+
+    }).catch(error => {
+      console.log(error);
+
+      this.utilsSvc.presentToast({
+        message: error.message,
+        duration: 2500,
+        color: 'danger',
+        position: 'middle',
+        icon: 'alert-circle-outline'
+      });
+
+    }).finally(() => {
+      loading.dismiss();
+    })
+  
+}
+
 }

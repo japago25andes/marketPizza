@@ -3,10 +3,10 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail } from 'firebase/auth';
 import { User } from '../models/user.model';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { getFirestore, setDoc, doc, getDoc, addDoc, collection, collectionData, query, updateDoc } from '@angular/fire/firestore';
+import { getFirestore, setDoc, doc, getDoc, addDoc, collection, collectionData, query, updateDoc,deleteDoc } from '@angular/fire/firestore';
 import { UtilsService } from './utils.service';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { getStorage, uploadString, ref, getDownloadURL } from 'firebase/storage';
+import { getStorage, uploadString, ref, getDownloadURL, deleteObject } from 'firebase/storage';
 
 @Injectable({
   providedIn: 'root'
@@ -70,7 +70,12 @@ export class FirebaseService {
   updateDocument(path: string, data: any) {
     return updateDoc(doc(getFirestore(), path), data);
   }
-
+  
+  //=============== Eliminar un documento ===============
+  deleteDocument(path: string) {
+    return deleteDoc(doc(getFirestore(), path));
+  }
+  
   //=============== Obtener un documento ===============
   async getDocument(path: string) {
     return (await getDoc(doc(getFirestore(), path))).data();
@@ -93,6 +98,11 @@ export class FirebaseService {
   //=============== Obtener ruta de la imagen con su url ===============
   async getFilePath(url: string) {
     return ref(getStorage(), url).fullPath;
+  }
+
+  //=============== Eliminar archivo ===============
+  deleteFile(path: string){
+    return deleteObject(ref(getStorage(), path));
   }
 
 }
