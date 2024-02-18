@@ -2,6 +2,21 @@
 
 <ion-content>
 
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-card mode="ios" color="secondary" class="d-flex-center ion-text-center" *ngIf="!loading && products.length">
+    <div>
+      <h5><strong>{{products.length}}</strong></h5>
+      <p>Pizzas</p>
+    </div>
+    <div>
+      <h5><strong>{{getProfits() | currency: 'USD'}}</strong></h5>
+      <p>Ganancias</p>
+    </div>
+  </ion-card>
+
   <!--=============== Productos ==============-->
   <ion-list *ngIf="!loading">
     <ion-item-sliding class="product-item" *ngFor="let p of products">
